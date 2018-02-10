@@ -1,6 +1,6 @@
-package com.pavelchak.DAO;
+package com.md.DAO;
 
-import com.pavelchak.model.EmployeeEntity;
+import com.md.model.EmployeeEntity;
 
 import java.sql.SQLException;
 import java.util.List;

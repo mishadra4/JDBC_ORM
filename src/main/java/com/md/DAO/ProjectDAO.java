@@ -1,6 +1,6 @@
-package com.pavelchak.DAO;
+package com.md.DAO;
 
-import com.pavelchak.model.ProjectEntity;
+import com.md.model.ProjectEntity;
 
 public interface ProjectDAO extends GeneralDAO<ProjectEntity, String> {
 }

@@ -1,6 +1,6 @@
-package com.pavelchak.DAO;
+package com.md.DAO;
 
-import com.pavelchak.model.DepartmentEntity;
+import com.md.model.DepartmentEntity;
 
 import java.sql.SQLException;
 
