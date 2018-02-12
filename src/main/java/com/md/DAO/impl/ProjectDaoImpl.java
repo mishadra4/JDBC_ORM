@@ -1,10 +1,7 @@
 package com.md.DAO.impl;
 
 import com.md.DAO.ProjectDAO;
-import com.md.DAO.WorksOnDAO;
-import com.md.model.PK_WorksOn;
 import com.md.model.ProjectEntity;
-import com.md.model.WorksOnEntity;
 import com.md.persistant.ConnectionManager;
 import com.md.transformer.Transformer;
 
@@ -12,61 +9,70 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WorksOnDaoImpl implements WorksOnDAO {
-    private static final String FIND_ALL = "SELECT * FROM works_on";
-    private static final String DELETE = "DELETE FROM works_on WHERE emp_no=? AND project_no=?";
-    private static final String CREATE = "INSERT works_on (emp_no, project_no, job, enter_date) VALUES (?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE works_on SET job=?, enter_date=? WHERE emp_no=? AND project_no=?";
+public class ProjectDaoImpl implements ProjectDAO {
+    private static final String FIND_ALL = "SELECT * FROM project";
+    private static final String DELETE = "DELETE FROM project WHERE project_no=?";
+    private static final String CREATE = "INSERT project (project_no, project_name, budget) VALUES (?, ?, ?)";
+    private static final String UPDATE = "UPDATE project SET project_name=?, budget=? WHERE project_no=?";
+    private static final String FIND_BY_ID = "SELECT * FROM project WHERE project_no=?";
 
     @Override
-    public List<WorksOnEntity> findAll() throws SQLException {
-        List<WorksOnEntity> works = new LinkedList<>();
+    public List<ProjectEntity> findAll() throws SQLException {
+        List<ProjectEntity> projects = new LinkedList<>();
         Connection connection = ConnectionManager.getConnection();
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(FIND_ALL)) {
                 while (resultSet.next()) {
-                    works.add((WorksOnEntity) new Transformer(WorksOnEntity.class).fromResultSetToEntity(resultSet));
+                    projects.add((ProjectEntity) new Transformer(ProjectEntity.class).fromResultSetToEntity(resultSet));
                 }
             }
         }
-        return works;
+        return projects;
     }
 
     @Override
-    public WorksOnEntity findById(PK_WorksOn pk_worksOn) throws SQLException {
-        return null;
+    public ProjectEntity findById(String id) throws SQLException {
+        ProjectEntity entity = null;
+        Connection connection = ConnectionManager.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(FIND_BY_ID)) {
+            ps.setString(1, id);
+            try (ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    entity = (ProjectEntity) new Transformer(ProjectEntity.class).fromResultSetToEntity(resultSet);
+                    break;
+                }
+            }
+        }
+        return entity;
     }
 
     @Override
-    public int create(WorksOnEntity entity) throws SQLException {
+    public int create(ProjectEntity entity) throws SQLException {
         Connection conn = ConnectionManager.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(CREATE)) {
-            ps.setInt(1,entity.getPk().getEmpNo());
-            ps.setString(2,entity.getPk().getProjectNo());
-            ps.setString(3,entity.getJob());
-            ps.setDate(4,entity.getDate());
+            ps.setString(1, entity.getProjectNo());
+            ps.setString(2, entity.getProjectName());
+            ps.setInt(3, entity.getBudget());
             return ps.executeUpdate();
         }
     }
 
     @Override
-    public int update(WorksOnEntity entity) throws SQLException {
+    public int update(ProjectEntity entity) throws SQLException {
         Connection conn = ConnectionManager.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(UPDATE)) {
-            ps.setString(1,entity.getJob());
-            ps.setDate(2,entity.getDate());
-            ps.setInt(3,entity.getPk().getEmpNo());
-            ps.setString(4,entity.getPk().getProjectNo());
+            ps.setString(1, entity.getProjectName());
+            ps.setInt(2, entity.getBudget());
+            ps.setString(3, entity.getProjectNo());
             return ps.executeUpdate();
         }
     }
 
     @Override
-    public int delete(PK_WorksOn id) throws SQLException {
+    public int delete(String id) throws SQLException {
         Connection conn = ConnectionManager.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(DELETE)) {
-            ps.setInt(1,id.getEmpNo());
-            ps.setString(2,id.getProjectNo());
+            ps.setString(1, id);
             return ps.executeUpdate();
         }
     }
